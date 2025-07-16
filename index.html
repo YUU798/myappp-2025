@@ -1,15 +1,107 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>My GitHub Website</title>
+  <meta charset="UTF-8" />
+  <title>家計簿アプリ</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .section { margin-bottom: 20px; }
+    input[type="number"] { width: 100px; }
+    button { margin-left: 10px; }
+  </style>
 </head>
 <body>
 
-  <h1>Hello, GitHub Pages!</h1>
-  <button onclick="sayHello()">Click me</button>
+  <h1>💰 家計簿アプリ</h1>
+
+  <div class="section">
+    <label>目標金額: <input type="number" id="goalAmount" /></label>
+    <button onclick="setGoal()">設定</button>
+  </div>
+
+  <div class="section">
+    <label>金額: <input type="number" id="amount" /></label>
+    <button onclick="deposit()">入金</button>
+    <button onclick="withdraw()">出金</button>
+  </div>
+
+  <div class="section">
+    <strong>現在の残高:</strong> <span id="balance">0</span> 円
+    <br/>
+    <strong>目標金額:</strong> <span id="goalDisplay">0</span> 円
+    <br/>
+    <strong>キャラクターのコメント:</strong> <span id="comment">未設定</span>
+  </div>
+
+  <div class="section">
+    <button onclick="showAnalysis()">分析を見る</button>
+    <pre id="analysis"></pre>
+  </div>
 
   <script src="code.js"></script>
+  <script>
+    // プログラムを初期化
+    const program = new プログラム();
+    const user = new 利用者(program);
+
+    function updateDisplay() {
+      document.getElementById("balance").textContent = program.残高.toFixed(2);
+      document.getElementById("goalDisplay").textContent = program.目標金額.toFixed(2);
+    }
+
+    function setGoal() {
+      const value = parseFloat(document.getElementById("goalAmount").value);
+      if (isNaN(value) || value < 0) {
+        alert("目標金額は0以上の数値を入力してください");
+        return;
+      }
+      program.目標金額 = value;
+      updateDisplay();
+      program.キャラクター.コメントを出力(program.残高, program.目標金額);
+    }
+
+    function deposit() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      user.プログラム.残高を更新("入金", amount);
+      updateDisplay();
+      showComment();
+    }
+
+    function withdraw() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      user.プログラム.残高を更新("出金", amount);
+      updateDisplay();
+      showComment();
+    }
+
+    function showComment() {
+      const lastComment = program.キャラクター.気分 === "嬉しい"
+        ? "素晴らしい！目標達成です！"
+        : "頑張りどころです。支出を見直してみましょう。";
+      document.getElementById("comment").textContent =
+        `${program.キャラクター.気分}：${lastComment}`;
+    }
+
+    function showAnalysis() {
+      const analysisElement = document.getElementById("analysis");
+      const data = program.入出金データ.map(r => `- ${r.toString()}`).join("\n");
+      const graph = (() => {
+        const monthly = {};
+        let currentBalance = 0;
+        for (const record of program.入出金データ) {
+          const ym = `${record.日付.getFullYear()}-${(record.日付.getMonth() + 1).toString().padStart(2, '0')}`;
+          if (record.タイプ === "入金") currentBalance += record.金額;
+          else currentBalance -= record.金額;
+          monthly[ym] = currentBalance;
+        }
+        return Object.entries(monthly).map(([m, b]) => `${m}: ${b.toFixed(2)}円`).join("\n");
+      })();
+      analysisElement.textContent = `--- 月末残高 ---\n${graph}\n\n--- 入出金履歴 ---\n${data}`;
+    }
+
+    // 初期表示
+    updateDisplay();
+  </script>
 </body>
 </html>
